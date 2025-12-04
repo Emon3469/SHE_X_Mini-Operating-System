@@ -44,7 +44,7 @@ void wait_for_timer()
 
 static void rotate_pole(int x, int y)
 {
-    char* sym = (char*)(__VGA_text_memory + 2 * (x * 800 * y));
+    char* sym = (char*)(__VGA_text_memory + 2 * (y * 80 + x));
     switch(*sym)
     {
         case '|':
