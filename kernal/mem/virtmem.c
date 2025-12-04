@@ -56,11 +56,11 @@ static bool alloc_page(uint32_t* table_entry);
 
 extern uint32_t __begin[];
 extern uint32_t __end[];
-extern char __VGA_TEXT_memory[];
+extern char __VGA_text_memory[];
 bool vmmngr_init()
 {
     set_recursive_map();
-    if(!map_page((uint32_t)__VGA_TEXT_memory, VGA_TEXT)){
+    if(!map_page((uint32_t)__VGA_text_memory, VGA_TEXT)){
         for(;;);
     }
     if(!map_page(STACK-PAGE_SIZE,STACK_PHY-PAGE_SIZE))
