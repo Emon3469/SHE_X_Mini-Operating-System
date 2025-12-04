@@ -307,3 +307,8 @@ void simd_fpu_fault (uint32_t cs, uint32_t  eip, uint32_t flags)  {
 	printhex(cs);printhex(eip);printhex(flags);
 	for (;;);
 }
+
+void interrupts_init()
+{
+    interrupt_init();
+}
