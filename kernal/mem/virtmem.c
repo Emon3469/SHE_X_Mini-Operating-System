@@ -46,7 +46,8 @@ enum PAGE_PDE_FLAGS {
    	PDE_FRAME		=	0xFFFFF000 
 };
 
-static inline void entry_toggle_attrib(uint32_t* entry, uint8_t attrib);
+static inline void entry_set_attrib(uint32_t* entry, uint32_t attrib);
+static inline void entry_clear_attrib(uint32_t* entry, uint32_t attrib);
 static inline void entry_set_frame(uint32_t*, uint32_t);
 static inline bool entry_is_present(uint32_t entry);
 static inline bool entry_is_writable(uint32_t entry);
@@ -103,7 +104,7 @@ bool map_page(uint32_t virtual_address, uint32_t physical_address)
         }
         if(!entry_is_present(_page_directory[pd_idx]))
         {
-            entry_toggle_attrib(_page_directory + pd_idx, PDE_WRITABLE);
+            entry_set_attrib(_page_directory + pd_idx, PDE_WRITABLE);
         }
     }
     uint32_t* page_table = (uint32_t*)(PAGE_TABLE | (pd_idx << 12));
@@ -113,11 +114,11 @@ bool map_page(uint32_t virtual_address, uint32_t physical_address)
 
     if(!entry_is_present(page_table[pt_idx]))
     {
-        entry_toggle_attrib(page_table + pt_idx, PTE_PRESENT);
+        entry_set_attrib(page_table + pt_idx, PTE_PRESENT);
     }
     if(!entry_is_writable(page_table[pt_idx]))
     {
-        entry_toggle_attrib(page_table + pt_idx, PTE_WRITABLE);
+        entry_set_attrib(page_table + pt_idx, PTE_WRITABLE);
     }
 
     return true;
@@ -130,11 +131,11 @@ static void set_recursive_map()
     entry_set_frame(vir_dir + 1023, phy_dir);
     if(!entry_is_present(vir_dir[1023]))
     {
-        entry_toggle_attrib(vir_dir + 1023, PDE_PRESENT);
+        entry_set_attrib(vir_dir + 1023, PDE_PRESENT);
     }
     if(!entry_is_writable(vir_dir[1023]))
     {
-        entry_toggle_attrib(vir_dir + 1023, PDE_WRITABLE);
+        entry_set_attrib(vir_dir + 1023, PDE_WRITABLE);
     }
     _page_directory = (uint32_t*)PAGE_DIRECTORY;
 }
@@ -144,7 +145,7 @@ void free_page(uint32_t* table_entry)
     if(!entry_is_present(*table_entry)) return;
     uint32_t physical_address = entry_physical(*table_entry);
     pmmngr_free_block((uint32_t*)physical_address);
-    entry_toggle_attrib(table_entry, PDE_PRESENT);
+    entry_clear_attrib(table_entry, PTE_PRESENT);
 }
 
 static bool alloc_page(uint32_t* table_entry)
@@ -154,13 +155,17 @@ static bool alloc_page(uint32_t* table_entry)
     entry_set_frame(table_entry, (uint32_t)physical_address);
     if(!entry_is_present(*table_entry))
     {
-        entry_toggle_attrib(table_entry, PDE_PRESENT);
+        entry_set_attrib(table_entry, PDE_PRESENT);
     }
     return true;
 }
 
-static inline void entry_toggle_attrib(uint32_t* entry, uint8_t attrib){
-    *entry ^= attrib;
+static inline void entry_set_attrib(uint32_t* entry, uint32_t attrib){
+    *entry |= attrib;
+}
+
+static inline void entry_clear_attrib(uint32_t* entry, uint32_t attrib){
+    *entry &= ~attrib;
 }
 
 static inline void entry_set_frame(uint32_t* entry, uint32_t physical_address){
