@@ -290,7 +290,7 @@ void fpu_fault  (uint32_t cs, uint32_t  eip, uint32_t flags)  {
 void alignment_check_fault (uint32_t eip,uint32_t cs,uint32_t flags,uint32_t err)  {
 
 	monitor_puts ("Alignment check :");
-	printhex(cs);printhex(eip);printhex(flags),printhex(err);
+	printhex(cs);printhex(eip);printhex(flags);printhex(err);
 	for (;;);
 }
 //! machine check
