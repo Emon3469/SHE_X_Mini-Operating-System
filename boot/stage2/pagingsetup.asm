@@ -32,8 +32,9 @@ MakeTable300h:
    loop .loop
 
 InstallAndSwitch:
-
     mov eax, PAGE_DIR
+    mov dword [eax + 4*0], PAGE_TABLE_0h | PRIV
+    mov dword [eax + 4*0x300], PAGE_TABLE_300h | PRIV
     mov cr3, eax
     
     mov eax, cr0
