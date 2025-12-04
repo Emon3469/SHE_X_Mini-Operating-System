@@ -91,6 +91,7 @@ void printhex(uint32_t input)
     buffer[pointer] = 'x';
     pointer--;
     buffer[0] = '0';
+    buffer[10] = 0;
     monitor_puts(buffer + pointer);
 }
 
