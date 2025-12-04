@@ -27,3 +27,22 @@ Troubleshooting
 - On Windows, run builds inside WSL with required packages.
 - If QEMU boots but hangs, use `make debug` and verify CR3 and PDEs in `vmmngr_init`.
 
+Recent Changes
+- Build: linker script path fixed to `kernal/linker.ld`; added `tools-check` target.
+- Interrupts: added `interrupts_init()` wrapper to match header/usage.
+- Timer: corrected PIT programming to write MSB to data port `0x40`.
+- VGA: unified symbol to `__VGA_text_memory` and updated mapping.
+- Physical memory: fixed E820 `size_low` usage, 4 KiB alignment, and bitmap range toggling.
+- Stage2 boot: corrected GDT descriptor limit/base; added PDE entries before enabling paging.
+- Kernel entry: removed extra `esp` subtraction to preserve boot parameters for `kmain`.
+- Cursor: now writes both low/high bytes to VGA cursor registers.
+- Printing: hex buffer now null-terminated before `monitor_puts`.
+- UI: spinner offset uses 80-column calculation for correct screen addressing.
+- VM: replaced XOR flag toggles with explicit set/clear helpers.
+
+Verification Notes
+- After `make debug`, inspect CR3 and PDEs (identity and `0x300`) before paging jump.
+- In shell, confirm spinner rotates and cursor positions correctly after prints.
+- Trigger exceptions to view hex diagnostics; verify clean formatting.
+- Use `remove_identity_map()` and ensure no page fault occurs entering shell.
+
