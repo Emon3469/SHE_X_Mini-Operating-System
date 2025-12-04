@@ -25,7 +25,7 @@ void set_timer(uint16_t count)
 {
     write_port(TIMER_CONTROL_PORT, 0x36);
     write_port(TIMER_DATA_PORT, count & 0xff);
-    write_port(TIMER_CONTROL_PORT, count >> 8);
+    write_port(TIMER_DATA_PORT, count >> 8);
 }
 
 void wait_for_timer()
