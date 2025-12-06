@@ -8,8 +8,8 @@ set_cursor:
     mov dx, 0x3d4
     out dx, al
     mov dx, 0x3d5
-    in al, dx
-    mov bl, al
+    mov al, cl
+    out dx, al
 
     mov al, 0x0e
     mov dx, 0x3d4

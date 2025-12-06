@@ -25,7 +25,7 @@ void set_timer(uint16_t count)
 {
     write_port(TIMER_CONTROL_PORT, 0x36);
     write_port(TIMER_DATA_PORT, count & 0xff);
-    write_port(TIMER_CONTROL_PORT, count >> 8);
+    write_port(TIMER_DATA_PORT, count >> 8);
 }
 
 void wait_for_timer()
@@ -44,7 +44,7 @@ void wait_for_timer()
 
 static void rotate_pole(int x, int y)
 {
-    char* sym = (char*)(__VGA_text_memory + 2 * (x * 800 * y));
+    char* sym = (char*)(__VGA_text_memory + 2 * (y * 80 + x));
     switch(*sym)
     {
         case '|':

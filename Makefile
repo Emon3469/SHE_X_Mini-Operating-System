@@ -30,7 +30,7 @@ kernel.bin : kernel/kernel.elf
 #You can use the --print-map option to look at what the linker does
 
 kernel/kernel.elf : $(C_OBJECTS) $(CXX_OBJECTS) $(ASM_OBJECTS)
-	i686-elf-ld  $^ -T kernel/linker.ld -e kmain -o $@ 
+	i686-elf-ld  $^ -T kernal/linker.ld -e kmain -o $@ 
 	chmod -x $@
 
 
@@ -54,3 +54,15 @@ disk.img:
 	
 clean :
 	rm $(C_OBJECTS) $(ASM_OBJECTS) *.bin
+
+.PHONY : tools-check
+tools-check:
+	@which i686-elf-gcc >/dev/null 2>&1 || echo "Missing i686-elf-gcc"
+	@which i686-elf-ld >/dev/null 2>&1 || echo "Missing i686-elf-ld"
+	@which i686-elf-g++ >/dev/null 2>&1 || echo "Missing i686-elf-g++"
+	@which nasm >/dev/null 2>&1 || echo "Missing nasm"
+	@which qemu-system-i386 >/dev/null 2>&1 || echo "Missing qemu-system-i386"
+	@which mcopy >/dev/null 2>&1 || echo "Missing mcopy"
+	@which mkfs.fat >/dev/null 2>&1 || which mkfs.vfat >/dev/null 2>&1 || echo "Missing mkfs.fat/mkfs.vfat"
+	@which dd >/dev/null 2>&1 || echo "Missing dd"
+	@which truncate >/dev/null 2>&1 || echo "Missing truncate"

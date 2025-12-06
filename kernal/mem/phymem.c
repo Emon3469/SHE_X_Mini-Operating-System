@@ -45,7 +45,7 @@ void pmmngr_init(uint32_t mapentrycount)
     {
         if((map_ptr -> type == 1) && (map_ptr -> start_low >= KERNEL_P) && !(map_ptr -> start_high))
         {
-            pmmngr_toggle_range(map_ptr -> start_low, map_ptr -> start_low + map_ptr -> start_low);
+            pmmngr_toggle_range(map_ptr -> start_low, map_ptr -> start_low + map_ptr -> size_low);
         }
         map_ptr++;
     }
@@ -75,7 +75,7 @@ bool pmmngr_free_block(uint32_t* address)
     uint32_t block = block_number((uint32_t)address);
     uint32_t dword = block >> 5;
     uint32_t offset = block % 32;
-    if(!extract_bit((uint32_t)(physical_memory_bitmap + dword), offset)) return 0;
+    if(!extract_bit(physical_memory_bitmap[dword], offset)) return 0;
     pmmngr_toggle_block(block);
     return 1;
 }
@@ -109,17 +109,16 @@ static inline void pmmngr_toggle_block(uint32_t block_number)
 static void pmmngr_toggle_range(uint32_t start, uint32_t end)
 {
     if(start % BLOCK_SIZE != 0){
-        start -= (start % BLOCK_SIZE_B);
+        start -= (start % BLOCK_SIZE);
     }
     if(end % BLOCK_SIZE != 0){
-        end += BLOCK_SIZE;
+        end += (BLOCK_SIZE - (end % BLOCK_SIZE));
     }
     while((end - start) > 0)
     {
         if((end - start) >= 32 * BLOCK_SIZE){
-            uint32_t* byte = (uint32_t*)(block_number(start) >> 3);
-            byte = (uint32_t*)((uint32_t*)byte + (uint32_t)physical_memory_bitmap);
-            *byte ^= 0xffffffff;
+            uint32_t word_index = (block_number(start) >> 5);
+            physical_memory_bitmap[word_index] ^= 0xffffffff;
             start += (BLOCK_SIZE << 5);
         }
         else {

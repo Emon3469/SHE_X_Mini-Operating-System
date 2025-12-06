@@ -13,5 +13,5 @@ code_segment:
 
 GDT_end:
    gdt_descriptor:
-     dw null_segment - GDT_end - 1
-     dw null_segment
+     dw GDT_end - null_segment - 1
+     dd null_segment
